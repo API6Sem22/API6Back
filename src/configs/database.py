@@ -1,17 +1,20 @@
-import pymongo
 from pymongo import MongoClient
+from dotenv import load_dotenv
+from src.utils.constants import DbEnum
+import os
 
-class Data_base_configs:
+
+class Database_configs:
 
     @staticmethod
     def create_connection_db():
-        url_mongodb = "mongodb+srv://d-end:six-d-end@api6semestre.aypedm0.mongodb.net/?retryWrites=true&w=majority"
+        load_dotenv()
+        url_mongodb = os.environ['BANCO_CREDENTIALS']
         cluster = MongoClient(url_mongodb)
-        db = cluster["Medical"]
+        db = cluster[DbEnum.CLUSTER.value]
         return db
 
     @staticmethod
     def get_collection_db():
-        cluster = Data_base_configs.create_connection_db()
-        collection = cluster["medical_insurance_amil_mensalidade"]
-        return collection
+        collection = Database_configs.create_connection_db()
+        return collection[os.environ['COLLECTION']]
