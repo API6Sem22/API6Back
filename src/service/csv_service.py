@@ -1,14 +1,13 @@
 import pandas as pd
 
+
 class Csv_service:
 
     @staticmethod
     def read_csv():
-        # DTYPES = {'dt_inclusao':str,
-        #           '_id':str,
-        #           '_idFile': str,
-        #           '_idheader_bronze':str}
-        url_csv = "C:/Users/gabsm/OneDrive/Documentos/6° semestre/git/API6Back/src/doc/amil_mensalidade_bronze_csv.csv"
-        read = pd.read_csv(url_csv, sep=',', low_memory=False).to_dict(orient="records")
-        print(read)
-        return read
+        parse_dates = ['competencia', 'dt_geracao', 'dt_nascimento', 'dt_situacao', 'inicio_vigencia']
+        url_csv = "src/doc/medical_repasse_unique_csv.csv"
+
+        data = pd.read_csv(url_csv, sep=';',
+                           low_memory=False, parse_dates=parse_dates).to_dict(orient="records")
+        return data
