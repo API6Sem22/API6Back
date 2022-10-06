@@ -1,6 +1,5 @@
 from pymongo import MongoClient
 from dotenv import load_dotenv
-from src.utils.constants import DbEnum
 import os
 
 

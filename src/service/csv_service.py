@@ -5,9 +5,27 @@ class Csv_service:
 
     @staticmethod
     def read_csv():
-        parse_dates = ['competencia', 'dt_geracao', 'dt_nascimento', 'dt_situacao', 'inicio_vigencia']
-        url_csv = "src/doc/medical_repasse_unique_csv.csv"
 
+        url_csv = "C:/Users/ramon/Desktop/Ramon/Faculdade/Api6semestre/API6Back/src/doc/affix_amil_header_bronze_csv.csv"
         data = pd.read_csv(url_csv, sep=';',
-                           low_memory=False, parse_dates=parse_dates).to_dict(orient="records")
+                           low_memory=False)
+        return Csv_service.transform_fields(data)
+
+    @staticmethod
+    def transform_fields(data):
+        columns = pd.DataFrame(data)
+        transform_columns_data = []
+        transform_columns_value = []
+        for col in columns:
+            if 'dt_' in col:
+                transform_columns_data.append(col)
+        for item in transform_columns_data:
+            data[item] = pd.to_datetime(data[item])
+
+        for col in columns:
+            if 'valor' in col: 
+                transform_columns_value.append(col)
+        for item in transform_columns_value:
+            data[item] = data[item].astype('double')
+
         return data
