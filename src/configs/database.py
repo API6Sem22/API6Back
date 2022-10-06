@@ -1,6 +1,5 @@
 from pymongo import MongoClient
 from dotenv import load_dotenv
-from src.utils.constants import DbEnum
 import os
 
 
@@ -11,7 +10,7 @@ class Database_configs:
         load_dotenv()
         url_mongodb = os.environ['BANCO_CREDENTIALS']
         cluster = MongoClient(url_mongodb)
-        db = cluster[DbEnum.CLUSTER.value]
+        db = cluster["Medical"]
         return db
 
     @staticmethod
