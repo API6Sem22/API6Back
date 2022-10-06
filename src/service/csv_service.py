@@ -19,12 +19,11 @@ class Csv_service:
             if 'dt_' in col:
                 transform_columns_data.append(col)
         for item in transform_columns_data:
-            data[item] = pd.to_datetime(data[item], format='%Y/%m/%d')
+            data[item] = pd.to_datetime(data[item])
 
         for col in columns:
             if 'valor' in col: 
                 transform_columns_value.append(col)
         for item in transform_columns_value:
-            data[item] = data[item].apply(pd.to_double)
-            #data[item] = data[item].astype(double)
+            data[item] = data[item].astype('double')
         return data
