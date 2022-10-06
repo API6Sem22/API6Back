@@ -5,6 +5,7 @@ class Csv_service:
 
     @staticmethod
     def read_csv():
+
         url_csv = "C:/Users/ramon/Desktop/Ramon/Faculdade/Api6semestre/API6Back/src/doc/affix_amil_header_bronze_csv.csv"
         data = pd.read_csv(url_csv, sep=';',
                            low_memory=False)
@@ -26,4 +27,5 @@ class Csv_service:
                 transform_columns_value.append(col)
         for item in transform_columns_value:
             data[item] = data[item].astype('double')
+
         return data
