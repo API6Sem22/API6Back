@@ -10,7 +10,7 @@ class Database_configs:
         load_dotenv()
         url_mongodb = os.environ['BANCO_CREDENTIALS']
         cluster = MongoClient(url_mongodb)
-        db = cluster["Medical"]
+        db = cluster[DbEnum.CLUSTER.value]
         return db
 
     @staticmethod
