@@ -2,14 +2,12 @@ import pyodbc
 import os
 from dotenv import load_dotenv
 import pymongo
-from bson.objectid import ObjectId
-
 
 def search_mongo():
     uri = os.environ['BANCO_CREDENTIALS']
     client = pymongo.MongoClient(uri)
     db_mongo = client.Medical
-    repasse = db_mongo.medical_repasse_trat_unique
+    repasse = db_mongo.medical_final_repasse
     cursor = repasse.find()
 
     return cursor
@@ -17,6 +15,12 @@ def search_mongo():
 
 def is_nan(field):
     if str(field) == 'nan':
+        return True
+    else:
+        return False
+
+def key_exists(key, dict):
+    if key not in dict:
         return True
     else:
         return False
@@ -38,21 +42,20 @@ def insert_dw(c_mongo):
     cursor.execute(comando)
 
     row = cursor.fetchall()
+    key_values = ["nome_completo", "dt_nascimento", "dependente", "marca_otica", "marca_otica_odonto",
+    "situacao", "dt_cancelamento", "dt_situacao", "cod_contrato", "cod_convenio", "convenio",
+    "dt_suspencao", "cod_plano", "plano", "operadora", "dt_inicio_vigencia", "saude_orig",
+    "saude_net_orig", "dt_competencia", "dt_geracao", "tp_beneficiario", "dif_rep_mens", "rubrica",
+    "valor_repasse", "condicao"]
 
     for item in c_mongo:
-        if item["_id"] in row:
+        if any(item["_id"] in r.values() for r in row):
             pass
-        else:
-            if is_nan(item["nome_completo"]): item["nome_completo"] = "-"
-            if is_nan(item["dt_nascimento"]): item["dt_nascimento"] = "-"
-            if is_nan(item["dependente"]): item["dependente"] = None
-            if is_nan(item["marca_otica"]): item["marca_otica"] = None
-            if is_nan(item["marca_otica_odonto"]): item["marca_otica_odonto"] = None
-            if is_nan(item["situacao"]): item["situacao"] = "-"
-            if is_nan(item["dt_cancelamento"]): item["dt_cancelamento"] = "-"
-            if is_nan(item["dt_situacao"]): item["dt_situacao"] = "-"
-            if is_nan(item["cod_contrato"]): item["cod_contrato"] = None
-            
+        else:        
+            for k in key_values:
+                if key_exists(k, item): item[k] = "NULL"            
+                if is_nan(item[k]): item[k] = "NULL"
+            print(item)
             # INSERT DIM_CLIENTE
             comando = f"""INSERT INTO Dim_Cliente(cli_id_ori,
                                                     cli_nome,
@@ -76,10 +79,6 @@ def insert_dw(c_mongo):
             cursor.commit()
 
             # INSERT DIM_CONVENIO
-            if is_nan(item["cod_convenio"]): item["cod_convenio"] = None
-            if is_nan(item["convenio"]): item["convenio"] = "-"
-            if is_nan(item["dt_suspencao"]): item["dt_suspencao"] = "-"
-
             comando = f"""INSERT INTO Dim_Convenio(con_codigo,
                                                     con_nome,
                                                     con_data_suspensao)
@@ -92,11 +91,6 @@ def insert_dw(c_mongo):
             cursor.commit()
 
             # INSERT DIM_PLANO
-            if is_nan(item["cod_plano"]): item["cod_plano"] = "-"
-            if is_nan(item["plano"]): item["plano"] = "-"
-            if is_nan(item["operadora"]): item["operadora"] = "-"
-            if is_nan(item["dt_inicio_vigencia"]): item["dt_inicio_vigencia"] = "-"
-
             comando = f"""INSERT INTO Dim_Plano(pln_codigo,
                                                 pln_nome,
                                                 pln_operadora,
@@ -111,18 +105,18 @@ def insert_dw(c_mongo):
             cursor.commit()
 
             # INSERT DIM_REPASSE
-            if is_nan(item["saude_orig"]): item["saude_orig"] = None
-            if is_nan(item["saude_net_orig"]): item["saude_net_orig"] = None
-            if is_nan(item["dt_competencia"]): item["dt_competencia"] = "-"
-            if is_nan(item["dt_geracao"]): item["dt_geracao"] = "-"
-
             comando = f"""INSERT INTO Dim_Repasse(rep_saude_orig,
-                                                    rep_saude_net_orig,
                                                     rep_competencia,
-                                                    rep_data_geracao)
+                                                    rep_data_geracao,
+                                                    rep_valor,
+                                                    rep_tipo_beneficiario,
+                                                    rep_rubrica,
+                                                    rep_condicao,
+                                                    rep_diferenca)
             VALUES
-                ({item["saude_orig"]}, {item["saude_net_orig"]}, '{item["dt_competencia"]}',
-                '{item["dt_geracao"]}')"""
+                ({item["saude_orig"]}, '{item["dt_competencia"]}', '{item["dt_geracao"]}',
+                {item["valor_repasse"]}, '{item["tp_beneficiario"]}', '{item["rubrica"]}', 
+                '{item["condicao"]}', {item["dif_rep_mens"]})"""
 
             cursor.execute(comando)
             cursor.execute("SELECT @@IDENTITY AS ID;")
