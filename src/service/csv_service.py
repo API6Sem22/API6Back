@@ -1,16 +1,33 @@
+import logging
+
+import dateutil
 import pandas as pd
 import os
 
 
 class Csv_service:
 
+    global logger
+    logger = logging.getLogger()
+
     @staticmethod
     def read_csv():
-        url_csv = os.environ['URL_CSV']
+        logger.info('read a csv')
+        try:
+            url_csv = "C:/Users/ramon/Desktop/Ramon/Faculdade/Api6semestre/API6Back/src/doc/amil_mensalidade_bronze_csv.csv"
 
-        data = pd.read_csv(url_csv, sep=';',
-                           low_memory=False)
-        return Csv_service.transform_fields(data)
+            data = pd.read_csv(url_csv, sep=',',
+                            low_memory=False)
+            idFile = data['_idFile']
+            for id in idFile:
+                logger.info('Get a file id: ' + str(id))
+            return Csv_service.transform_fields(data)
+        except FileNotFoundError as error:
+            logger.info('Error file not found')
+            return error
+        except ValueError as error:
+            logger.error('Parser error during convertion')
+            return error
 
     @staticmethod
     def transform_fields(data):
