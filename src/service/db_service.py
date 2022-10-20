@@ -22,9 +22,10 @@ class Db_service:
         post = Csv_service.read_csv()
         collection_name = Database_configs.get_collection_db()
         try:
-            collection_name.insert_many(post)
-        except:
-            logger.error('Insert error')
+            collection_name.insert_many(post.to_dict('records'))
+            logger.info('Data imported into MongoDB successfully')
+        except Exception as e:
+            logger.error('Insert error: ' + str(e))
 
 
     @staticmethod

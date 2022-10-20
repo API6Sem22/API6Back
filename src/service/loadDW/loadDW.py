@@ -2,6 +2,8 @@ import pyodbc
 import os
 from dotenv import load_dotenv
 import pymongo
+import logging
+from datetime import datetime
 
 def search_mongo():
     uri = os.environ['BANCO_CREDENTIALS']
@@ -35,6 +37,7 @@ def insert_dw(c_mongo):
 
     dados_conexao = "Driver={"+driver+"}; Server="+server+"; Database="+db+"; ENCRYPT=yes; UID="+user+"; PWD="+pwd+";"
     conexao = pyodbc.connect(dados_conexao)
+    logger.info('Create a connection')
 
     cursor = conexao.cursor()
     comando = f"""SELECT cli_id_ori FROM Dim_Cliente"""
@@ -49,9 +52,9 @@ def insert_dw(c_mongo):
     "valor_repasse", "condicao"]
 
     for item in c_mongo:
-        if any(item["_id"] in r.values() for r in row):
+        if any(item["_id"] in r for r in row):
             pass
-        else:        
+        else:   
             for k in key_values:
                 if key_exists(k, item): item[k] = "NULL"            
                 if is_nan(item[k]): item[k] = "NULL"
@@ -133,14 +136,28 @@ def insert_dw(c_mongo):
 
             cursor.execute(comando)
             cursor.commit()
+            logger.info('Get a file id: ' + str(item["_id"]))
 
     conexao.close()
+    logger.info('Close connection')
 
 
 if __name__ == '__main__':
+    datetime_now = datetime.now()
+    filename = datetime.now().strftime("%Y-%m-%d") + ' ' + datetime_now.strftime('%Hh%Mm%S') + '-DW.log'
+    format_log = '[%(asctime)s] %(name)s %(levelname)s: %(message)s'
+    logging.basicConfig(filename=filename,
+                        filemode='a',
+                        level=logging.DEBUG,
+                        format=format_log,
+                        datefmt='%Y-%m-%d %H:%M:%S')
+
+    global logger
+    logger = logging.getLogger()
     try:
         load_dotenv()
         c_mongo = search_mongo()
         insert_dw(c_mongo)
+        logger.info('Data imported into SQL Server successfully')
     except Exception as e:
-        print(e)
+        logger.error('Error: ' + str(e))
