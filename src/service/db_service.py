@@ -16,8 +16,8 @@ class Db_service:
         try:
             collection_name.insert_many(post)
             logger.info('Insert in database with success!')
-        except:
-            logger.error('Insert error')
+        except Exception as e:
+            logger.error('Insert error: ' + str(e))
         finally:
             LoggerConfiguration.save_logs()
 

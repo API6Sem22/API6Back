@@ -14,7 +14,7 @@ class Csv_service:
 
             data = pd.read_csv(url_csv, sep=',',
                             low_memory=False)
-            idFile = data['_idFile']
+            idFile = data['_id']
             for id in idFile:
                 logger.info('Get a file id: ' + str(id))
             return Csv_service.transform_fields(data)
