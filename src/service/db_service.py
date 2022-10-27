@@ -1,18 +1,10 @@
 import logging
-from datetime import datetime
 from src.configs.database import Database_configs
 from src.service.csv_service import Csv_service
+from src.service.logs.loggers import LoggerConfiguration
 
 
 class Db_service:
-    datetime_now = datetime.now()
-    filename = datetime.now().strftime("%Y-%m-%d") + ' ' + datetime_now.strftime('%Hh%Mm%S') + '.log'
-    format_log = '[%(asctime)s] %(name)s %(levelname)s: %(message)s'
-    logging.basicConfig(filename=filename,
-                        filemode='a',
-                        level=logging.DEBUG,
-                        format=format_log,
-                        datefmt='%Y-%m-%d %H:%M:%S')
 
     global logger
     logger = logging.getLogger()
@@ -20,11 +12,15 @@ class Db_service:
     @staticmethod
     def insert_into_db():
         post = Csv_service.read_csv()
-        collection_name = Database_configs.get_collection_db()
+        collection_name = Database_configs.get_collection_db(True)
         try:
             collection_name.insert_many(post)
+            logger.info('Insert in database with success!')
         except:
             logger.error('Insert error')
+        finally:
+            LoggerConfiguration.save_logs()
+
 
 
     @staticmethod
@@ -35,4 +31,3 @@ class Db_service:
             print(result)
 
 
-Db_service.insert_into_db()

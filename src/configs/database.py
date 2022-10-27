@@ -26,13 +26,15 @@ class Database_configs:
             return Exception
 
     @staticmethod
-    def get_collection_db():
+    def get_collection_db(bool: bool):
         try:
             logger.info('Create a connection')
             collection = Database_configs.create_connection_db()
 
             logger.info('Get a collection name')
-            return collection[os.environ['COLLECTION']]
+            if bool:
+                return collection[os.environ['COLLECTION']]
+            return collection[os.environ['COLLECTION_LOGS']]
         except Exception as e:
             logger.error('error while get a collection name')
 

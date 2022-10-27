@@ -1,9 +1,5 @@
 import logging
-
-import dateutil
 import pandas as pd
-import os
-
 
 class Csv_service:
 
@@ -14,7 +10,7 @@ class Csv_service:
     def read_csv():
         logger.info('read a csv')
         try:
-            url_csv = "C:/Users/ramon/Desktop/Ramon/Faculdade/Api6semestre/API6Back/src/doc/amil_mensalidade_bronze_csv.csv"
+            url_csv = ""
 
             data = pd.read_csv(url_csv, sep=',',
                             low_memory=False)
