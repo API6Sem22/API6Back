@@ -2,6 +2,7 @@ import pyodbc
 import os
 from dotenv import load_dotenv
 import pymongo
+from datetime import datetime
 
 def search_mongo():
     uri = os.environ['BANCO_CREDENTIALS']
@@ -42,19 +43,27 @@ def insert_dw(c_mongo):
     cursor.execute(comando)
 
     row = cursor.fetchall()
-    key_values = ["nome_completo", "dt_nascimento", "dependente", "marca_otica", "marca_otica_odonto",
-    "situacao", "dt_cancelamento", "dt_situacao", "cod_contrato", "cod_convenio", "convenio",
-    "dt_suspencao", "cod_plano", "plano", "operadora", "dt_inicio_vigencia", "saude_orig",
-    "saude_net_orig", "dt_competencia", "dt_geracao", "tp_beneficiario", "dif_rep_mens", "rubrica",
-    "valor_repasse", "condicao"]
+    key_values = ["nome_completo", "dependente", "marca_otica", "marca_otica_odonto", "situacao", 
+    "cod_contrato", "cod_convenio", "convenio", "cod_plano", "plano", "operadora", "saude_orig",
+    "saude_net_orig", "tp_beneficiario", "dif_rep_mens", "rubrica", "valor_repasse", "condicao"]
+    key_datas = ["dt_nascimento", "dt_cancelamento", "dt_situacao", "dt_suspencao", 
+    "dt_inicio_vigencia", "dt_competencia", "dt_geracao"]
 
     for item in c_mongo:
-        if any(item["_id"] in r.values() for r in row):
+        if any(item["_id"] in r for r in row):
             pass
         else:        
             for k in key_values:
                 if key_exists(k, item): item[k] = "NULL"            
                 if is_nan(item[k]): item[k] = "NULL"
+            
+            for d in key_datas:
+                if key_exists(d, item): item[d] = "nan"  
+                if is_nan(item[d]): item[d] = "1990-01-01T00:00:00" 
+                if item[d] != "1990-01-01T00:00:00":
+                    item[d] = datetime.strptime(item[d], "%d/%m/%Y %H:%M")
+                    item[d] = item[d].strftime('%Y-%m-%dT%H:%M:%S')
+            
             print(item)
             # INSERT DIM_CLIENTE
             comando = f"""INSERT INTO Dim_Cliente(cli_id_ori,
