@@ -1,16 +1,29 @@
+import logging
 import pandas as pd
-import os
-
 
 class Csv_service:
 
+    global logger
+    logger = logging.getLogger()
+
     @staticmethod
     def read_csv():
-        url_csv = os.environ['URL_CSV']
+        logger.info('read a csv')
+        try:
+            url_csv = ""
 
-        data = pd.read_csv(url_csv, sep=';',
-                           low_memory=False)
-        return Csv_service.transform_fields(data)
+            data = pd.read_csv(url_csv, sep=',',
+                            low_memory=False)
+            idFile = data['_id']
+            for id in idFile:
+                logger.info('Get a file id: ' + str(id))
+            return Csv_service.transform_fields(data)
+        except FileNotFoundError as error:
+            logger.info('Error file not found')
+            return error
+        except ValueError as error:
+            logger.error('Parser error during convertion')
+            return error
 
     @staticmethod
     def transform_fields(data):

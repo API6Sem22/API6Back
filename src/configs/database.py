@@ -1,19 +1,40 @@
+import logging
+
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
 
 
 class Database_configs:
+    global logger
+    logger = logging.getLogger()
 
     @staticmethod
     def create_connection_db():
         load_dotenv()
-        url_mongodb = os.environ['BANCO_CREDENTIALS']
-        cluster = MongoClient(url_mongodb)
-        db = cluster[DbEnum.CLUSTER.value]
-        return db
+        try:
+            url_mongodb = os.environ['BANCO_CREDENTIALS']
+            logging.info('Establishing connection')
+            cluster = MongoClient(url_mongodb)
+
+            db = cluster[os.environ['CLUSTER']]
+            logging.info('Get a cluster')
+            return db
+
+        except Exception as e:
+            logger.error('Connection error, bad credentials ')
+            return Exception
 
     @staticmethod
-    def get_collection_db():
-        collection = Database_configs.create_connection_db()
-        return collection[os.environ['COLLECTION']]
+    def get_collection_db(bool: bool):
+        try:
+            logger.info('Create a connection')
+            collection = Database_configs.create_connection_db()
+
+            logger.info('Get a collection name')
+            if bool:
+                return collection[os.environ['COLLECTION']]
+            return collection[os.environ['COLLECTION_LOGS']]
+        except Exception as e:
+            logger.error('error while get a collection name')
+
