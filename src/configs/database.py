@@ -13,6 +13,7 @@ class Database_configs:
     def create_connection_db():
         load_dotenv()
         try:
+            logger.info('Opening database connection')
             url_mongodb = os.environ['BANCO_CREDENTIALS']
             logging.info('Establishing connection')
             cluster = MongoClient(url_mongodb)

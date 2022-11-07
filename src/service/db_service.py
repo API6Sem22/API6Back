@@ -19,15 +19,5 @@ class Db_service:
         except Exception as e:
             logger.error('Insert error: ' + str(e))
         finally:
+            logger.info('Persisti logs in database')
             LoggerConfiguration.save_logs()
-
-
-
-    @staticmethod
-    def get_data_db():
-        collection_name = Database_configs.get_collection_db()
-        results = collection_name.find()
-        for result in results:
-            print(result)
-
-
