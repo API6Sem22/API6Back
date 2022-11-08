@@ -3,9 +3,9 @@ import pandas as pd
 from cryptography.fernet import Fernet
 
 def result_df():
-    server = "api6sem.database.windows.net"
-    user = "dwadmin"
-    pwd = "Admin123"
+    server = ""
+    user = ""
+    pwd = ""
     db = "dw_dend"
     driver = "SQL Server"
 
