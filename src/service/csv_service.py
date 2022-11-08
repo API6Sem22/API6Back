@@ -1,5 +1,6 @@
 import logging
 import pandas as pd
+import re
 
 class Csv_service:
 
@@ -14,7 +15,7 @@ class Csv_service:
 
             data = pd.read_csv(url_csv, sep=',',
                             low_memory=False)
-            idFile = data['_id']
+            idFile = data['marca_otica']
             for id in idFile:
                 logger.info('Get a file id: ' + str(id))
             return Csv_service.transform_fields(data)
@@ -34,7 +35,9 @@ class Csv_service:
             if 'dt_' in col:
                 transform_columns_data.append(col)
         for item in transform_columns_data:
-            data[item] = pd.to_datetime(data[item])
+            if re.search("NaN", str(data[item])) == None:
+                data[item] = pd.to_datetime(data[item])
+    
 
         for col in columns:
             if 'valor' in col: 

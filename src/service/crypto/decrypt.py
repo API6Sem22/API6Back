@@ -3,9 +3,9 @@ import pandas as pd
 from cryptography.fernet import Fernet
 
 def result_df():
-    server = ""
-    user = ""
-    pwd = ""
+    server = "api6sem.database.windows.net"
+    user = "dwadmin"
+    pwd = "Admin123"
     db = "dw_dend"
     driver = "SQL Server"
 
@@ -13,18 +13,41 @@ def result_df():
     conexao = pyodbc.connect(dados_conexao)
 
     cursor = conexao.cursor()
-    comando = f"""SELECT * FROM TESTE"""
+    comando = f"""SELECT * FROM Dim_Cliente"""
 
     cursor.execute(comando)
 
     row = cursor.fetchall()
+
     ids = []
+    id_orig = []
     nomes = []
+    data_nascimento = []
+    qtd_dependente = []
+    marca_otica = []
+    otica_odonto = []
+    situacao = []
+    cancelamento = []
+    data_situacao = []
+    cod_contrato = []
     for r in row:
         ids.append(r[0])
-        nomes.append(r[1])
+        id_orig.append(r[1])
+        nomes.append(r[2])
+        data_nascimento.append(r[3])
+        qtd_dependente.append(r[4])
+        marca_otica.append(r[5])
+        otica_odonto.append(r[6])
+        situacao.append(r[7])
+        cancelamento.append(r[8])
+        data_situacao.append(r[9])
+        cod_contrato.append(r[10])  
 
-    data = {"id": ids, "nome": nomes}
+    data = {"cli_id": ids, "cli_id_ori": id_orig, "cli_nome": nomes, "cli_data_nascimento": data_nascimento, 
+    "cli_qtd_dependente": qtd_dependente, "cli_marca_otica": marca_otica, 
+    "cli_marca_otica_odonto": otica_odonto, "cli_situacao": situacao, 
+    "cli_data_cancelamento": cancelamento, "cli_data_situacao": data_situacao, 
+    "cli_cod_contrato": cod_contrato}
     df_data= pd.DataFrame(data)
 
     comando = f"""SELECT * FROM KEY_CRYPTO"""
@@ -45,8 +68,10 @@ def result_df():
 def decrypt_data(df_data, key):
     for index, row in df_data.iterrows():
         cipher_suite = Fernet(key[str(row["id"])])
-        decoded_text = cipher_suite.decrypt(row["nome"])
-        df_data = df_data.replace(to_replace=row["nome"], value=decoded_text.decode("utf-8"))
+        decoded_nome = cipher_suite.decrypt(row["cli_nome"])
+        decoded_contrato = cipher_suite.decrypt(row["cli_cod_contrato"])
+        df_data.loc[df_data["cli_nome"] == row["cli_nome"], "cli_nome"] = decoded_nome
+        df_data.loc[df_data["cli_cod_contrato"] == row["cli_cod_contrato"], "cli_cod_contrato"] = decoded_contrato
     
     return df_data
 

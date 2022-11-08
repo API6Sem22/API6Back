@@ -82,7 +82,7 @@ def insert_dw(c_mongo):
                 ('{item["_id"]}', '{item["nome_completo"]}', '{item["dt_nascimento"]}',
                 {item["dependente"]}, {item["marca_otica"]}, {item["marca_otica_odonto"]},
                 '{item["situacao"]}', '{item["dt_cancelamento"]}', '{item["dt_situacao"]}',
-                {item["cod_contrato"]})"""
+                '{item["cod_contrato"]}')"""
 
             cursor.execute(comando)
             cursor.execute("SELECT @@IDENTITY AS ID;")
