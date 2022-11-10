@@ -6,7 +6,7 @@ def result_df():
     server = ""
     user = ""
     pwd = ""
-    db = "dw_dend"
+    db = "denddev"
     driver = "SQL Server"
 
     dados_conexao = "Driver={"+driver+"}; Server="+server+"; Database="+db+"; ENCRYPT=yes; UID="+user+"; PWD="+pwd+";"
@@ -67,11 +67,11 @@ def result_df():
 
 def decrypt_data(df_data, key):
     for index, row in df_data.iterrows():
-        cipher_suite = Fernet(key[str(row["id"])])
+        cipher_suite = Fernet(key[str(row["cli_marca_otica"])])
         decoded_nome = cipher_suite.decrypt(row["cli_nome"])
-        decoded_contrato = cipher_suite.decrypt(row["cli_cod_contrato"])
-        df_data.loc[df_data["cli_nome"] == row["cli_nome"], "cli_nome"] = decoded_nome
-        df_data.loc[df_data["cli_cod_contrato"] == row["cli_cod_contrato"], "cli_cod_contrato"] = decoded_contrato
+        decoded_contrato = cipher_suite.decrypt(str(row["cli_cod_contrato"]))
+        df_data.loc[df_data["cli_nome"] == row["cli_nome"], "cli_nome"] = decoded_nome.decode('utf-8')
+        df_data.loc[df_data["cli_cod_contrato"] == row["cli_cod_contrato"], "cli_cod_contrato"] = decoded_contrato.decode('utf-8')
     
     return df_data
 

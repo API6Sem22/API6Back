@@ -19,7 +19,7 @@ class Db_service:
         #     post.loc[post["nXmX_bXnXfXWXXrXX"] == row["nXmX_bXnXfXWXXrXX"], "nXmX_bXnXfXWXXrXX"] = enc_nome.decode('utf-8')
         #     post.loc[post["cod_contrato"] == row["cod_contrato"], "cod_contrato"] = enc_contrato.decode('utf-8')
         try:
-            collection_name.insert_many(post)
+            collection_name.insert_many(post.to_dict('records'))
             logger.info('Insert in database with success!')
         except Exception as e:
             logger.error('Insert error: ' + str(e))
@@ -36,3 +36,5 @@ class Db_service:
             print(result)
 
 
+if __name__ == '__main__':
+    Db_service.insert_into_db()

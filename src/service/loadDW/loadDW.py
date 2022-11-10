@@ -16,7 +16,7 @@ def search_mongo():
 
 
 def is_nan(field):
-    if str(field) == 'nan':
+    if str(field) == 'nan' or str(field) == 'None':
         return True
     else:
         return False
@@ -32,7 +32,7 @@ def insert_dw(c_mongo):
     server = os.environ['DW_SERVER']
     user = os.environ['DW_USER']
     pwd = os.environ['DW_PASS']
-    db = "dw_dend"
+    db = "denddev"
     driver = "SQL Server"
 
     dados_conexao = "Driver={"+driver+"}; Server="+server+"; Database="+db+"; ENCRYPT=yes; UID="+user+"; PWD="+pwd+";"
@@ -55,6 +55,7 @@ def insert_dw(c_mongo):
         if any(item["_id"] in r for r in row):
             pass
         else:   
+            print(item)
             for k in key_values:
                 if key_exists(k, item): item[k] = "NULL"            
                 if is_nan(item[k]): item[k] = "NULL"
@@ -62,9 +63,11 @@ def insert_dw(c_mongo):
             for d in key_datas:
                 if key_exists(d, item): item[d] = "nan"  
                 if is_nan(item[d]): item[d] = "1990-01-01T00:00:00" 
-                if item[d] != "1990-01-01T00:00:00":
-                    item[d] = datetime.strptime(item[d], "%d/%m/%Y %H:%M")
-                    item[d] = item[d].strftime('%Y-%m-%dT%H:%M:%S')
+                if not isinstance(item[d], datetime):
+                    if item[d] != "1990-01-01T00:00:00":
+                        print(type(item[d]))
+                        item[d] = datetime.strptime(item[d], "%d/%m/%Y %H:%M")
+                        item[d] = item[d].strftime('%Y-%m-%dT%H:%M:%S')
             
             print(item)
             # INSERT DIM_CLIENTE
