@@ -15,9 +15,9 @@ class Db_service:
         post = Csv_service.read_csv()
         collection_name = Database_configs.get_collection_db(True)
         # for index, row in post.iterrows():
-        #     enc_nome, enc_contrato = crypto.encrypt(row["marca_otica"], row["nXmX_bXnXfXWXXrXX"], row["cod_contrato"])
-        #     post.loc[post["nXmX_bXnXfXWXXrXX"] == row["nXmX_bXnXfXWXXrXX"], "nXmX_bXnXfXWXXrXX"] = enc_nome.decode('utf-8')
-        #     post.loc[post["cod_contrato"] == row["cod_contrato"], "cod_contrato"] = enc_contrato.decode('utf-8')
+        #     enc_nome, enc_contrato = crypto.encrypt(row["marca_otica"], row["nXmX_bXnXfXWXXrXX"], "batata")
+        #     post.at[index,'nXmX_bXnXfXWXXrXX'] = enc_nome.decode('utf-8')
+        #     post.at[index,'cod_contrato'] = enc_contrato.decode('utf-8')
         try:
             collection_name.insert_many(post.to_dict('records'))
             logger.info('Insert in database with success!')

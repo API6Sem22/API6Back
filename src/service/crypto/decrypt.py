@@ -67,11 +67,13 @@ def result_df():
 
 def decrypt_data(df_data, key):
     for index, row in df_data.iterrows():
-        cipher_suite = Fernet(key[str(row["cli_marca_otica"])])
-        decoded_nome = cipher_suite.decrypt(row["cli_nome"])
-        decoded_contrato = cipher_suite.decrypt(str(row["cli_cod_contrato"]))
-        df_data.loc[df_data["cli_nome"] == row["cli_nome"], "cli_nome"] = decoded_nome.decode('utf-8')
-        df_data.loc[df_data["cli_cod_contrato"] == row["cli_cod_contrato"], "cli_cod_contrato"] = decoded_contrato.decode('utf-8')
+        if str(row["cli_marca_otica"]) in key:
+            cipher_suite = Fernet(str(key[str(row["cli_marca_otica"])]).encode('utf-8'))
+            decoded_nome = cipher_suite.decrypt(str(row["cli_nome"]).encode('utf-8'))
+            df_data.at[index,'cli_nome'] = decoded_nome.decode('utf-8')
+            if str(row["cli_cod_contrato"]) != "NULL":
+                decoded_contrato = cipher_suite.decrypt(str(row["cli_cod_contrato"]).encode('utf-8'))
+                df_data.at[index,'cli_cod_contrato'] = decoded_contrato.decode('utf-8')
     
     return df_data
 

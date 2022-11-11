@@ -55,7 +55,6 @@ def insert_dw(c_mongo):
         if any(item["_id"] in r for r in row):
             pass
         else:   
-            print(item)
             for k in key_values:
                 if key_exists(k, item): item[k] = "NULL"            
                 if is_nan(item[k]): item[k] = "NULL"
@@ -65,12 +64,15 @@ def insert_dw(c_mongo):
                 if is_nan(item[d]): item[d] = "1990-01-01T00:00:00" 
                 if not isinstance(item[d], datetime):
                     if item[d] != "1990-01-01T00:00:00":
-                        print(type(item[d]))
                         item[d] = datetime.strptime(item[d], "%d/%m/%Y %H:%M")
                         item[d] = item[d].strftime('%Y-%m-%dT%H:%M:%S')
             
             print(item)
             # INSERT DIM_CLIENTE
+            if item["nome_completo"] != "NULL":
+                item["nome_completo"] = item["nome_completo"].decode('utf-8')
+            if item["cod_contrato"] != "NULL":
+                item["cod_contrato"] = item["cod_contrato"].decode('utf-8')
             comando = f"""INSERT INTO Dim_Cliente(cli_id_ori,
                                                     cli_nome,
                                                     cli_data_nascimento,

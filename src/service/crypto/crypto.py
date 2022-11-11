@@ -25,16 +25,16 @@ class crypto:
 
         row = cursor.fetchall()
 
-        enc_nome     =  ""
-        enc_contrato = ""
+        enc_nome     =  None
+        enc_contrato = None
         for r in row:
-            key = Fernet.generate_key()
-            cipher_suite = Fernet(r[0])
+            key = str(r[0]).encode('utf-8')
+            cipher_suite = Fernet(key)
 
             enc_nome     =  cipher_suite.encrypt(bytes(cli_nome, 'utf-8'))
             enc_contrato = cipher_suite.encrypt(bytes(str(cod_num), 'utf-8'))
             
-        if enc_nome == "":
+        if enc_nome == None and enc_contrato == None:
             key = Fernet.generate_key()
             cipher_suite = Fernet(key)
 
