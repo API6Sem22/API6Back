@@ -69,10 +69,6 @@ def insert_dw(c_mongo):
             
             print(item)
             # INSERT DIM_CLIENTE
-            if item["nome_completo"] != "NULL":
-                item["nome_completo"] = item["nome_completo"].decode('utf-8')
-            if item["cod_contrato"] != "NULL":
-                item["cod_contrato"] = item["cod_contrato"].decode('utf-8')
             comando = f"""INSERT INTO Dim_Cliente(cli_id_ori,
                                                     cli_nome,
                                                     cli_data_nascimento,

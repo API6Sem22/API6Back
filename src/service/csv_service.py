@@ -1,6 +1,8 @@
 import logging
 import pandas as pd
 import re
+import os
+from dotenv import load_dotenv
 
 class Csv_service:
 
@@ -9,11 +11,12 @@ class Csv_service:
 
     @staticmethod
     def read_csv():
+        load_dotenv()
         logger.info('read a csv')
         try:
-            url_csv = ""
+            url_csv = os.environ['URL_CSV']
 
-            data = pd.read_csv(url_csv, sep=',',
+            data = pd.read_csv(url_csv, sep=';',
                             low_memory=False)
             idFile = data['marca_otica']
             for id in idFile:
